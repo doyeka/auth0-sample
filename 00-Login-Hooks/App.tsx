@@ -6,13 +6,29 @@
  * @flow strict-local
  */
 
-import React from 'react';
+import React, {useEffect} from 'react';
 import {Alert, Button, StyleSheet, Text, View} from 'react-native';
 import {useAuth0, Auth0Provider} from 'react-native-auth0';
 import config from './auth0-configuration';
 
 const Home = () => {
-  const {authorize, clearSession, user, getCredentials, error, isLoading} = useAuth0();
+  const {
+    authorize,
+    clearSession,
+    user,
+    getCredentials,
+    error,
+    isLoading,
+    requireLocalAuthentication,
+  } = useAuth0();
+
+  useEffect(() => {
+    const biometricAuth = async () => {
+      await requireLocalAuthentication();
+      console.log('HERE!');
+    };
+    biometricAuth();
+  });
 
   const onLogin = async () => {
     await authorize({}, {});
@@ -26,9 +42,12 @@ const Home = () => {
     await clearSession({}, {});
   };
 
-
   if (isLoading) {
-    return <View style={styles.container}><Text>Loading</Text></View>;
+    return (
+      <View style={styles.container}>
+        <Text>Loading</Text>
+      </View>
+    );
   }
 
   return (
@@ -68,8 +87,8 @@ const styles = StyleSheet.create({
   error: {
     margin: 20,
     textAlign: 'center',
-    color: '#D8000C'
-  }
+    color: '#D8000C',
+  },
 });
 
 export default App;
